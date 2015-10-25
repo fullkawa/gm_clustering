@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import os.path as path
+import re
+
 from lxml import html
 import requests
-
-import os.path as path
 
 import pandas as pd
 
@@ -71,13 +72,65 @@ if (not path.exists(gamelistcsv)) & path.exists(boothlistcsv) :
     if (len(gametab) >= 1) :
       alist = gametab[0].xpath('section/div/h3/a')
       if (len(alist) >= 1) :
-        print ' Check', boothurl
+        print ' Check', booth[0], boothurl
         for a in alist :
           gamelist.append([boothno, boothname, a.get('href')])
 
   df = pd.DataFrame(gamelist)
   df.to_csv(gamelistcsv, encoding='utf-8', header=None)
   print ' gamelist >', gamelistcsv
+
+
+# GET GAME DATA
+
+if (not path.exists(gamedatacsv)) & path.exists(gamelistcsv) :
+  print 'Get gamedata...'
+
+  gamedata = []
+  gamelist = pd.read_csv(gamelistcsv, encoding='utf-8', header=None)
+  for index, game in gamelist.iterrows() :
+    boothno = game[1]
+    boothname = game[2]
+    gameurl = game[3]
+
+    print ' Check', game[0], gameurl
+    record = [boothno, boothname]
+    index = ''
+
+    try :
+      page = requests.get(gameurl)
+      contents = html.fromstring(page.text)
+
+      newsttl = contents.xpath('//h3[@class="newsttl"]')
+      if len(newsttl) > 0 :
+        gametitle = newsttl[0].text.strip()
+        record.append(gametitle)
+
+      datatr = contents.xpath('//div[@class="data"]/*/tr')
+      for tr in datatr :
+        th = tr.xpath('th')[0].strip()
+        td = tr.xpath('td')[0].strip()
+        record.append(td.text)
+      textindex = contents.xpath('//div[@id="tabbox"]')[0].text_content().encode('utf-8')
+      textindex = textindex.strip().lower().__str__()
+      textindex = re.sub(r"ツイート!.*'twitter-wjs'\);", "", textindex)
+      textindex = re.sub(r"ブースtopへ戻る", "", textindex)
+      textindex = re.sub(r"\t", "", textindex)
+      textindex = re.sub(r"\n", " ", textindex)
+      textindex = textindex.strip()
+
+      record.append(textindex)
+      gamedata.append(record)
+      # for DEBUG
+      if len(gamedata) > 100 :
+        break
+
+    except Exception, e :
+      print '  ', game[0], e
+
+  df = pd.DataFrame(gamedata)
+  df.to_csv(gamedatacsv, encoding='utf-8', header=None)
+  print ' gamedata >', gamedatacsv
 
 
 print 'done'
