@@ -108,9 +108,9 @@ if (not path.exists(gamedatacsv)) & path.exists(gamelistcsv) :
 
       datatr = contents.xpath('//div[@class="data"]/*/tr')
       for tr in datatr :
-        th = tr.xpath('th')[0].strip()
-        td = tr.xpath('td')[0].strip()
-        record.append(td.text)
+        th = tr.xpath('th')[0]
+        td = tr.xpath('td')[0]
+        record.append(td.text_content().encode('utf-8').strip())
       textindex = contents.xpath('//div[@id="tabbox"]')[0].text_content().encode('utf-8')
       textindex = textindex.strip().lower().__str__()
       textindex = re.sub(r"ツイート!.*'twitter-wjs'\);", "", textindex)
@@ -122,8 +122,8 @@ if (not path.exists(gamedatacsv)) & path.exists(gamelistcsv) :
       record.append(textindex)
       gamedata.append(record)
       # for DEBUG
-      if len(gamedata) > 100 :
-        break
+      #if len(gamedata) > 100 :
+      #  break
 
     except Exception, e :
       print '  ', game[0], e
