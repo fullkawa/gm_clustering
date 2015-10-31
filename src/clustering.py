@@ -14,7 +14,7 @@ NUM_CLUSTERS = 20
 gamedatacsv  = '../data/gamedata.csv'
 
 gamelist = pd.read_csv(gamedatacsv, encoding='utf-8', header=None)
-descs = gamelist[11]
+descs = gamelist[12]
 
 def analyzer(text):
     ret = []
@@ -39,6 +39,6 @@ km = MiniBatchKMeans(n_clusters=NUM_CLUSTERS,
 X = km.fit_predict(X)
 print 'Done: km.fit, predict'
 
-gamelist[12] = km.labels_
-sortedlist = gamelist.sort(12)
+gamelist[13] = km.labels_
+sortedlist = gamelist.sort(13)
 sortedlist.to_csv('../data/game_clustered.csv', encoding='utf-8', header=None)

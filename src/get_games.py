@@ -94,7 +94,7 @@ if (not path.exists(gamedatacsv)) & path.exists(gamelistcsv) :
     gameurl = game[3]
 
     print ' Check', game[0], gameurl
-    record = [boothno, boothname]
+    record = [boothno, boothname, gameurl]
     index = ''
 
     try :
@@ -115,7 +115,9 @@ if (not path.exists(gamedatacsv)) & path.exists(gamelistcsv) :
       textindex = textindex.strip().lower().__str__()
       textindex = re.sub(r"ツイート!.*'twitter-wjs'\);", "", textindex)
       textindex = re.sub(r"ブースtopへ戻る", "", textindex)
+      textindex = re.sub(ur'[\uc2a0]+', "", textindex)
       textindex = re.sub(r"\t", "", textindex)
+      textindex = re.sub(r"\r\n", " ", textindex)
       textindex = re.sub(r"\n", " ", textindex)
       textindex = textindex.strip()
 
