@@ -13,7 +13,7 @@ NUM_CLUSTERS = 20
 
 gamedatacsv  = '../data/gamedata.csv'
 
-gamelist = pd.read_csv(gamedatacsv, encoding='utf-8', header=None)
+gamelist = pd.read_csv(gamedatacsv, encoding='utf-8', engine='python', header=None)
 descs = gamelist[12]
 
 def analyzer(text):
